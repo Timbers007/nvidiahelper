@@ -1,7 +1,6 @@
 mod executor;
-mod nvidiahelper;
+mod commands;
 mod nvidiagpu;
-mod constants;
 
 use std::env;
 use std::collections::HashMap;
@@ -9,7 +8,9 @@ use std::process::Output;
 use std::io::{Result};
 
 use crate::executor::{execute, Environment};
-use crate::nvidiahelper::{HelperCommand, new_command};
+use crate::commands::{HelperCommand, new_command};
+
+pub const BUILD_VERSION: &'static str = "2";
 
 /*
  * The first section will generally work on systems like Ubuntu or Arch Linux
@@ -81,7 +82,7 @@ fn cmd_exists<'a>(arg: &'a String, commands: &'a HashMap<String, HelperCommand>)
     }
 }
 
-fn check_alias<'a>(arg: &'a String, args: &'a HashMap<String, HelperCommand>) -> Option<&'a nvidiahelper::HelperCommand> {
+fn check_alias<'a>(arg: &'a String, args: &'a HashMap<String, HelperCommand>) -> Option<&'a HelperCommand> {
     for x in args.values() {
         if x.aliases.contains(arg) {
             return Some(x);
@@ -109,8 +110,8 @@ fn run(cmd: &HelperCommand, args: &Vec<&String>, env: &mut Environment, gpu: &mu
     if !cmd.args.contains(&args.len()) { println!("'{}' does not accept {} arguments. See 'help' for more information.", cmd.name, args.len()); return; }
 
     if cmd.name.eq("help") {
-        println!("----- NVIDIA GPU Terminal Helper ----- v{} -----\n", constants::BUILD_VERSION);
-        println!("Execute Command Format: ./nvidiahelper argument1 arg1value1 argument2 arg2value1 arg2value2");
+        println!("----- NVIDIA GPU Terminal Helper ----- b{} -----\n", BUILD_VERSION);
+        println!("Execute Command Format: ./teamgreenhelper argument1 arg1value1 argument2 arg2value1 arg2value2");
         println!("Further, [argument] will represent an argument that is required. () is optional. Omit [] and/or () when you execute the command.\n");
         println!("GPU Control Arguments:");
         println!("  gpu [gpu_id]");
@@ -137,10 +138,10 @@ fn run(cmd: &HelperCommand, args: &Vec<&String>, env: &mut Environment, gpu: &mu
         println!("  debug true");
         println!("        Shows output of all executions from this program. Will be detailed.\n\n");
         println!();
-        println!("Example: ./nvidiahelper fan 0 75 fan 1 75 clockoffset 150 memoryoffset 500 power 400")
+        println!("Example: ./teamgreenhelper fan 0 75 fan 1 75 clockoffset 150 memoryoffset 500 power 400")
     } else if cmd.name.eq("version") {
-        println!("NVIDIAHelper by Tim b{}", constants::BUILD_VERSION);
-        println!("https://github.com/Timbers007/nvidiahelper")
+        println!("Team Green Helper by Tim b{}", BUILD_VERSION);
+        println!("https://github.com/Timbers007/teamgreenhelper")
     } else if cmd.name.eq("display") {
         env.display = args[0].clone();
     } else if cmd.name.eq("xauth") {
@@ -205,11 +206,7 @@ fn run(cmd: &HelperCommand, args: &Vec<&String>, env: &mut Environment, gpu: &mu
             println!("Failed to set fan speed. {} is not an integer between 0 and 100.", fan_speed);
         }
 
-        if fan_speed == -1 {
-            debug_message(&env, nvidiagpu::reset_fan_speed(&env, gpu), "Resetting Fan Speed");
-        } else {
-            debug_message(&env, nvidiagpu::set_fan_speed(&env, gpu, fan_index, fan_speed as usize), "Fan Speed");
-        }
+        debug_message(&env, nvidiagpu::set_fan_speed(&env, gpu, fan_index, fan_speed as usize), "Fan Speed")
     } else if cmd.name.eq("memoryoffset") {
         let memory_offset;
         match args[0].parse::<i32>() {

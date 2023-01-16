@@ -1,5 +1,6 @@
-use std::io::{Result};
-use std::process::Output;
+use std::io;
+use std::process::{Output};
+use io::Result;
 use crate::{Environment, execute};
 
 pub fn set_memory_offset(env: &Environment, gpu: &mut usize, memory_offset: i32) -> Result<Output> {
@@ -62,16 +63,12 @@ pub fn print_query_info(env: &Environment, gpu: &usize) {
     fan.speed,memory.used,memory.total,enforced.power.limit,driver_version,pcie.link.gen.current,pcie.link.width.current,vbios_version");
     let gpu_information:Vec<&str> = gpu_information_raw.split(", ").collect();
 
-    println!(" _                _________ ______  _________ _______ ");
-    println!("( (    /||\\     /|\\__   __/(  __  \\ \\__   __/(  ___  )");
-    println!("|  \\  ( || )   ( |   ) (   | (  \\  )   ) (   | (   ) |");
-    println!("|   \\ | || |   | |   | |   | |   ) |   | |   | (___) |");
-    println!("| (\\ \\) |( (   ) )   | |   | |   | |   | |   |  ___  |");
-    println!("| | \\   | \\ \\_/ /    | |   | |   ) |   | |   | (   ) |");
-    println!("| )  \\  |  \\   /  ___) (___| (__/  )___) (___| )   ( |");
-
-    let footer = "|/    )_)   \\_/   \\_______/(______/ \\_______/|/     \\|";
-    println!("{}", footer);
+    println!(" _______                    _____                     ");
+    println!("|__   __|                  / ____|                    ");
+    println!("   | | ___  __ _ _ __ ___ | |  __ _ __ ___  ___ _ __  ");
+    println!("   | |/ _ \\/ _` | '_ ` _ \\| | |_ | '__/ _ \\/ _ \\ '_ \\ ");
+    println!("   | |  __/ (_| | | | | | | |__| | | |  __/  __/ | | |");
+    println!("   |_|\\___|\\__,_|_| |_| |_|\\_____|_|  \\___|\\___|_| |_|");
     println!();
     if gpu_information.len() != 13 {
         println!("{}", gpu_information[0]);
