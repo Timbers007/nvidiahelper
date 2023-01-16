@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "nvidiahelper"
-version = "1.0.0"
+name = "teamgreenhelper"
+version = "2.0.0"
