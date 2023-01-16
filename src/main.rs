@@ -206,7 +206,11 @@ fn run(cmd: &HelperCommand, args: &Vec<&String>, env: &mut Environment, gpu: &mu
             println!("Failed to set fan speed. {} is not an integer between 0 and 100.", fan_speed);
         }
 
-        debug_message(&env, nvidiagpu::set_fan_speed(&env, gpu, fan_index, fan_speed as usize), "Fan Speed")
+        if fan_speed == -1 {
+            debug_message(&env, nvidiagpu::reset_fan_speed(&env, gpu), "Resetting Fan Speed");
+        } else {
+            debug_message(&env, nvidiagpu::set_fan_speed(&env, gpu, fan_index, fan_speed as usize), "Fan Speed");
+        }
     } else if cmd.name.eq("memoryoffset") {
         let memory_offset;
         match args[0].parse::<i32>() {
